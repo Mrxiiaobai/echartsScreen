@@ -1,26 +1,52 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Home from "./views/Home.vue";
+import login from './components/pages/login.vue'
+// import index from "./index/index.vue";
+
+let functions = [];
+
+
+const menu = () => ({
+  component: import( /* webpackChunkName: "menu" */ '@/components/pages/index'),
+  loading: null,
+  error: null,
+})
+
+
+let constructor = [{
+  path: "/",
+  name: "login",
+  component: login,
+  mate: {
+    keepalive: true
+  }
+}, {
+  path: '/menu',
+  name: 'menu',
+  component: menu,
+  meta: {
+    keepAlive: true
+  }
+}];
+
+let routers = functions.map((item) => {
+  return {
+    path: `/${item}`,
+    name: item,
+    component: () => ({
+      component: import(`@/components/functions/${item}`),
+      loading: null,
+      error: null,
+      delay: 200,
+    }),
+  }
+});
+
+let config = constructor.concat(routers);
 
 Vue.use(Router);
 
+
 export default new Router({
-  mode: "history",
-  base: process.env.BASE_URL,
-  routes: [
-    {
-      path: "/",
-      name: "home",
-      component: Home
-    },
-    {
-      path: "/about",
-      name: "about",
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () =>
-        import(/* webpackChunkName: "about" */ "./views/About.vue")
-    }
-  ]
+  routes: config
 });
